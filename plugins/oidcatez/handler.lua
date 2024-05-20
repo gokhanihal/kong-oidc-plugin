@@ -1,31 +1,31 @@
 -- handler.lua
 local BasePlugin = require "kong.plugins.base_plugin"
-local utils = require("kong.plugins.oidc.utils")
-local filter = require("kong.plugins.oidc.filter")
-local session = require("kong.plugins.oidc.session")
+local utils = require("kong.plugins.oidcatez.utils")
+local filter = require("kong.plugins.oidcatez.filter")
+local session = require("kong.plugins.oidcatez.session")
 
-local OidcHandler = BasePlugin:extend()
+local OidcAtezHandler = BasePlugin:extend()
 
-OidcHandler.PRIORITY = 1000
-OidcHandler.VERSION = "1.0.0"
+OidcAtezHandler.PRIORITY = 1000
+OidcAtezHandler.VERSION = "1.0.0"
 local M = {}
 
-function OidcHandler:new()
-  OidcHandler.super.new(self, "oidc")
+function OidcAtezHandler:new()
+  OidcAtezHandler.super.new(self, "oidcatez")
 end
 
-function OidcHandler:access(config)
-  OidcHandler.super.access(self)
+function OidcAtezHandler:access(config)
+  OidcAtezHandler.super.access(self)
   local oidcConfig = utils.get_options(config, ngx)
 
   if filter.shouldProcessRequest(oidcConfig) then
     session.configure(config)
     M.handle(oidcConfig)
   else
-    ngx.log(ngx.DEBUG, "OidcHandler ignoring request, path: " .. ngx.var.request_uri)
+    ngx.log(ngx.DEBUG, "OidcAtezHandler ignoring request, path: " .. ngx.var.request_uri)
   end
 
-  ngx.log(ngx.DEBUG, "OidcHandler done")
+  ngx.log(ngx.DEBUG, "OidcAtezHandler done")
 end
 
 function M.handle(oidcConfig)
@@ -37,7 +37,7 @@ function M.handle(oidcConfig)
     ngx.log(ngx.DEBUG, "================================================================================")
     ngx.log(ngx.DEBUG, "Start Introspect...")
     ngx.log(ngx.DEBUG, "================================================================================")
-    ngx.log(ngx.DEBUG, "OidcHandler calling Introspect, endpoint : "..oidcConfig.introspection_endpoint)
+    ngx.log(ngx.DEBUG, "OidcAtezHandler calling Introspect, endpoint : "..oidcConfig.introspection_endpoint)
     response = M.introspect(oidcConfig)
     if response then
       utils.injectUser(response)
@@ -64,7 +64,7 @@ function M.handle(oidcConfig)
 end
 
 function M.make_oidc(oidcConfig)
-  ngx.log(ngx.DEBUG, "OidcHandler calling authenticate, requested path: " .. ngx.var.request_uri)
+  ngx.log(ngx.DEBUG, "OidcAtezHandler calling authenticate, requested path: " .. ngx.var.request_uri)
   local res, err = require("resty.openidc").authenticate(oidcConfig)
   if err then
     if oidcConfig.recovery_page_path then
@@ -198,11 +198,11 @@ function M.introspect(oidcConfig)
         utils.exit(ngx.HTTP_UNAUTHORIZED, "UnAuthorized...", ngx.HTTP_UNAUTHORIZED)    
     end
     
-    ngx.log(ngx.DEBUG, "OidcHandler introspect succeeded, requested path: " .. ngx.var.request_uri)
+    ngx.log(ngx.DEBUG, "OidcAtezHandler introspect succeeded, requested path: " .. ngx.var.request_uri)
     return res
   end
   return nil
 end
 
 
-return OidcHandler
+return OidcAtezHandler

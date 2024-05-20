@@ -1,4 +1,5 @@
 local cjson = require("cjson")
+local cjson_safe = require "cjson.safe"
 
 local M = {}
 
@@ -58,6 +59,13 @@ function M.get_options(config, ngx)
     filters = parseFilters(config.filters),
     logout_path = config.logout_path,
     redirect_after_logout_uri = config.redirect_after_logout_uri,
+    scopes_required = config.scopes_required,
+    scopes_claim = config.scopes_claim,
+    access_type = config.access_type,    
+    serverUrl = config.serverUrl,
+    keepalive = config.keepalive, 
+    context = config.context,
+    abac_rules = config.abac_rules    
   }
 end
 
@@ -98,6 +106,9 @@ end
 
 -- Convert a lua table into a lua syntactically correct string
 function M.table_to_string(tbl)
+    local result = cjson_safe.encode(tbl)
+    return result
+    --[[
     if tbl == nil then return "{}" end 
     local result = "{"
     for k, v in pairs(tbl) do
@@ -121,6 +132,7 @@ function M.table_to_string(tbl)
         result = result:sub(1, result:len()-1)
     end
     return result.."}"
+    --]]
 end
 
 

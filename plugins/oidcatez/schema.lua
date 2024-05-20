@@ -1,3 +1,4 @@
+-- schema.lua
 return {
   no_consumer = true,
   fields = {
@@ -20,7 +21,6 @@ return {
     redirect_after_logout_uri = { type = "string", required = false, default = '/' },
     filters = { type = "string" },
     scopes_required = { type = "string", required = true, default = "openid" },
-    scopes_claim = { type = "string", required = true, default = "scope" },
-    test_field = { type = "string", required = true, default = "test1" }
+    scopes_claim = { type = "string", required = true, default = "scope;realm_access.roles;resource_access.account.roles" }
   }
 }
